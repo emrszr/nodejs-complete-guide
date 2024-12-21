@@ -90,6 +90,9 @@ main {
 .card__actions button,
 .card__actions a {
     margin: 0 0.25rem;
+    text-decoration: none;
+    padding: 0 0.25rem;
+
 }
 
 .btn {
