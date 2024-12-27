@@ -1,7 +1,25 @@
 <%- include('../includes/head.ejs') %>
-</head>
+    </head>
 
-<body>
-    <%- include('../includes/navigation.ejs') %>
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+        <main>
+            <% if (products.length > 0) { %>
+                <ul>
+                    <% for (p of products) { %>
+                        <li>
+                            <h1><%= p.productData.title %></h1>
+                            <p><%= p.qty %> x $<%= p.productData.price %></p>
+                            <form action="/cart-delete-item" method="POST">
+                                <input type="hidden" name="productId" value="<%= p.productData.id %>">
+                                <button class="btn" type="submit">Remove</button>
+                            </form>
+                        </li>
+                    <% } %>
 
-    <%- include('../includes/end.ejs') %>
+                </ul>
+            <% } else {  %>
+                <h1>No Products in Cart</h1>
+            <% }  %>
+        </main>
+        <%- include('../includes/end.ejs') %>
