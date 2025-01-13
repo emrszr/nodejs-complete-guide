@@ -18,8 +18,17 @@ main {
 form {
   display: inline;
 }
+
 .centered {
   text-align: center;
+}
+
+.image {
+  height: 20rem;
+}
+
+.image img {
+  height: 100%;
 }
 
 .main-header {
@@ -148,20 +157,6 @@ form {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
 }
 
-.cart__item-list {
-  border: 1px solid #ededed;
-  box-shadow: 3px 3px 15px #eaeaea;
-  padding: 0 1rem;
-  max-width: 50%;
-  margin: 0 auto;
-
-}
-.cart__item-list .cart__item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .card__header,
 .card__content {
   padding: 1rem;
@@ -203,19 +198,21 @@ form {
   border-radius: 3px;
   cursor: pointer;
 }
-.btn.danger {
-  color: lightcoral;
-  border-color: lightcoral;
-}
 
 .btn:hover,
 .btn:active {
   background-color: #00695c;
   color: white;
 }
+
+.btn.danger {
+  color: red;
+  border-color: red;
+}
+
 .btn.danger:hover,
 .btn.danger:active {
-  background-color: lightcoral;
+  background: red;
   color: white;
 }
 
