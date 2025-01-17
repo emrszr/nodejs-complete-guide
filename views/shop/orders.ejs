@@ -12,12 +12,20 @@
                         <li class="orders__item">
                             <h1>#<%= order._id %></h1>
                             <ul class="orders__products">
-                                <% order.items.forEach(product => {%>
-                                    <li class="orders__products-item"><%= product.title %> (<%= product.quantity %>)</li>
+                                <% order.products.forEach(product => {%>
+                                    <li class="orders__products-item"><%= product.product.title %> (<%= product.quantity %>)</li>
                                     <% });%>
                             </ul>
                         </li>
                     <% }) %>
+                    <li class="orders__item">
+                        <h1>Total</h1>
+                        <ul class="orders__products">
+                            
+                                <li class="orders__products-item">$<%= total %> (<%= count %>)</li>
+                            
+                        </ul>
+                    </li>
                 </ul>
             <% } else { %>
                 <h1>Nothing there!</h1>
