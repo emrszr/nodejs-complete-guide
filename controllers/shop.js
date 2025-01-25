@@ -3,15 +3,12 @@ const Order = require("../models/order");
 const product = require("../models/product");
 
 exports.getProducts = (req, res, next) => {
-  console.log(req.session.isLoggedIn);
-
   Product.find()
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "All Products",
         path: "/products",
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -27,7 +24,6 @@ exports.getProduct = (req, res, next) => {
         product: product,
         path: "/products",
         pageTitle: product.title,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -42,7 +38,6 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         pageTitle: "Shop",
         path: "/",
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -58,7 +53,6 @@ exports.getCart = (req, res, next) => {
         pageTitle: "Your Cart",
         path: "/cart",
         products: user.cart.items,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -96,7 +90,7 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          name: req.user.name,
+          email: req.user.email,
           userId: req.user,
         },
         products: products,
@@ -129,7 +123,6 @@ exports.getOrders = (req, res, next) => {
         orders: orders,
         count: count,
         total: total,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
