@@ -1,5 +1,10 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const { MailerSend, EmailParams, Sender, Recipient } = require("mailersend");
+
+const mailerSend = new MailerSend({
+  apiKey: process.env.MAILERSEND_API_KEY,
+});
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -82,7 +87,22 @@ exports.postSignup = (req, res, next) => {
         })
         .then((result) => {
           res.redirect("/login");
-        });
+
+          const sentFrom = new Sender(
+            "info@trial-vywj2lpr7d147oqz.mlsender.net",
+            "ABESE"
+          );
+          const recipients = [new Recipient("emerszr@gmail.com", "Emerszr")];
+          const emailParams = new EmailParams()
+            .setFrom(sentFrom)
+            .setTo(recipients)
+            .setSubject("Signup successful")
+            .setHtml("<strong>You successfully signed up</strong>")
+            .setText("Successfull sign up");
+
+          return mailerSend.email.send(emailParams);
+        })
+        .catch((err) => console.log(err));
     })
     .catch((err) => console.log(err));
 };
