@@ -5,6 +5,9 @@ const { MailerSend, EmailParams, Sender, Recipient } = require("mailersend");
 const user = require("../models/user");
 const env = require("dotenv").config();
 
+const { validationResult } = require("express-validator");
+const { validate } = require("../models/product");
+
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY,
 });
@@ -25,6 +28,8 @@ exports.getLogin = (req, res, next) => {
     pageTitle: "Login",
     path: "/login",
     errorMessage: message,
+    oldInput: { email: "", password: "" },
+    validationResult: [],
   });
 };
 
@@ -39,11 +44,28 @@ exports.getSignup = (req, res, next) => {
     pageTitle: "Signup",
     path: "/signup",
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validationResult: [],
   });
 };
 
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      pageTitle: "Login",
+      path: "/login",
+      errorMessage: errors.array()[0].msg,
+      oldInput: { email: email, password: password },
+      validationResult: errors.array(),
+    });
+  }
 
   User.findOne({ email: email })
     .then((user) => {
@@ -73,40 +95,43 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
-  const { email, password, confirmPassword } = req.body;
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash(
-          "error",
-          "E-Mail exists already, please pick a different one."
-        );
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
+  const { email, password } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      pageTitle: "Signup",
+      path: "/signup",
+      errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+        confirmPassword: req.body.confirmPassword,
+      },
+      validationResult: errors.array(),
+    });
+  }
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect("/login");
 
-          const recipients = [new Recipient("emerszr@gmail.com", "Emerszr")];
-          const emailParams = new EmailParams()
-            .setFrom(sentFrom)
-            .setTo(recipients)
-            .setSubject("Signup successful")
-            .setHtml("<strong>You successfully signed up</strong>")
-            .setText("Successfull sign up");
+      const recipients = [new Recipient("emerszr@gmail.com", "Emerszr")];
+      const emailParams = new EmailParams()
+        .setFrom(sentFrom)
+        .setTo(recipients)
+        .setSubject("Signup successful")
+        .setHtml("<strong>You successfully signed up</strong>")
+        .setText("Successfull sign up");
 
-          return mailerSend.email.send(emailParams);
-        })
-        .catch((err) => console.log(err));
+      return mailerSend.email.send(emailParams);
     })
     .catch((err) => console.log(err));
 };

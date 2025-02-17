@@ -1,33 +1,50 @@
 <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/product.css">
-</head>
+    </head>
 
-<body>
-   <%- include('../includes/navigation.ejs') %>
+    <body>
+        <%- include('../includes/navigation.ejs') %>
 
-    <main>
-        <form class="product-form" action="/admin/<%=  editing ? 'edit-product': 'add-product' %>" method="POST">
-            <div class="form-control">
-                <label for="title">Title</label>
-                <input type="text" name="title" id="title" value="<%= editing ? product.title : '' %>">
-            </div>
-            <div class="form-control">
-                <label for="imageUrl">Image URL</label>
-                <input type="text" name="imageUrl" id="imageUrl" value="<%= editing ? product.imageUrl : '' %>">
-            </div>
-            <div class="form-control">
-                <label for="price">Price</label>
-                <input type="number" name="price" id="price" step="0.01" value="<%= editing ? product.price : '' %>">
-            </div>
-            <div class="form-control">
-                <label for="description">Description</label>
-                <textarea name="description" id="description" rows="5"><% if (editing) { %> <%= product.description %> <% }  else {} %></textarea>
-            </div>
-            <input type="hidden" name="id" value="<%= editing ? product._id : null %>">
+            <main>
+                <% if (errorMessage) { %>
+                    <div class="user-message user-message--error">
+                        <%= errorMessage %>
+                    </div>
+                    <% } %>
+                        <form class="product-form" action="/admin/<%=  (editing) ? 'edit-product': 'add-product' %>"
+                            method="POST">
+                            <div class="form-control">
+                                <label for="title">Title</label>
+                                <input class="<%= validationResult.find(e => e.path === 'title')  ? 'invalid': '' %>"
+                                    type="text" name="title" id="title"
+                                    value="<%= (editing || hasError) ? product.title : '' %>">
+                            </div>
+                            <div class="form-control">
+                                <label for="imageUrl">Image URL</label>
+                                <input class="<%= validationResult.find(e => e.path === 'imageUrl')  ? 'invalid': '' %>"
+                                    type="text" name="imageUrl" id="imageUrl"
+                                    value="<%= (editing || hasError) ? product.imageUrl : '' %>">
+                            </div>
+                            <div class="form-control">
+                                <label for="price">Price</label>
+                                <input class="<%= validationResult.find(e => e.path === 'price')  ? 'invalid': '' %>"
+                                    type="number" name="price" id="price" step="0.01"
+                                    value="<%= (editing || hasError) ? product.price : '' %>">
+                            </div>
+                            <div class="form-control">
+                                <label for="description">Description</label>
+                                <textarea
+                                    class="<%= validationResult.find(e => e.path === 'description')  ? 'invalid': '' %>"
+                                    name="description" id="description"
+                                    rows="5"><% if ((editing || hasError)) { %> <%= product.description %> <% }  else {} %></textarea>
+                            </div>
+                            <input type="hidden" name="id" value="<%= (editing || hasError) ? product._id : null %>">
 
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button class="btn" type="submit"><% if (editing) { %>Update Product<%  } else { %>Add Product<%} %></button>
-        </form>
-    </main>
-<%- include('../includes/end.ejs') %>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="btn" type="submit">
+                                <% if ((editing)) { %>Update Product<% } else { %>Add Product<%} %>
+                            </button>
+                        </form>
+            </main>
+            <%- include('../includes/end.ejs') %>
