@@ -7,6 +7,7 @@ const MongoDbStore = require("connect-mongodb-session")(session);
 const { doubleCsrf } = require("csrf-csrf");
 const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
+const multer = require("multer");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -36,6 +37,27 @@ const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
 
 app.use(cookieParser(COOKIES_SECRET));
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 
@@ -44,7 +66,13 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
+
+app.use(express.static(path.join(__dirname, "public"))); // it serves the puclic folder statically as in the root folder
+app.use("/images", express.static(path.join(__dirname, "images"))); // it it serves the images folder statically as /images folder
+
 app.use(
   session({
     secret: "my secret",
