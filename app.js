@@ -31,7 +31,7 @@ const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
     cookieName: CSRF_COOKIE_NAME,
     cookieOptions: { sameSite: false, secure: false }, // not ideal for production, development only
     getTokenFromRequest: (req) => {
-      return req.body._csrf;
+      return req.body._csrf || req.headers["csrf-token"];
     },
   });
 
@@ -120,9 +120,11 @@ app.get("/500", errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
+  console.log(error);
   res.status(500).render("500", {
     pageTitle: "Error!",
     path: "/500",
+    isAuthenticated: false,
   });
 });
 
