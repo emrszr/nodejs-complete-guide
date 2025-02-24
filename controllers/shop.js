@@ -139,6 +139,29 @@ exports.postCartDeleteItem = (req, res, next) => {
     });
 };
 
+exports.getCheckout = (req, res, next) => {
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      const products = user.cart.items;
+      let total = 0;
+      products.forEach((prd) => {
+        total += prd.quantity * prd.productId.price;
+      });
+      res.render("shop/checkout", {
+        pageTitle: "Checkout",
+        path: "/checkout",
+        products: products,
+        totalSum: total,
+      });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+};
+
 exports.postOrder = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
