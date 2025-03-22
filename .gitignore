@@ -38,3 +38,6 @@ yarn.lock
 # ESLint and Prettier configuration files (optional, only if you don't want to track these settings)
 .eslintcache
 .prettierignore
+
+server.cert
+server.key

@@ -1,4 +1,7 @@
 const path = require("path");
+const fs = require("fs");
+// const https = require("https");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -8,16 +11,21 @@ const { doubleCsrf } = require("csrf-csrf");
 const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
+
+require("dotenv").config();
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
-const CSRF_SECRET = "super csrf secret";
-const COOKIES_SECRET = "super cookie secret";
-const CSRF_COOKIE_NAME = "_csrf";
+const CSRF_SECRET = process.env.CSRF_SECRET;
+const COOKIES_SECRET = process.env.COOKIES_SECRET;
+const CSRF_COOKIE_NAME = process.env.CSRF_COOKIE_NAME;
 
-const MONGODB_URI =
-  "mongodb+srv://node-shop:node-shop@node-rest-shop.dnhdu.mongodb.net/shop?retryWrites=true&w=majority&appName=node-rest-shop";
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@node-rest-shop.dnhdu.mongodb.net/${process.env.DEFAULT_DB}?retryWrites=true&w=majority&appName=node-rest-shop`;
+console.log(MONGODB_URI);
 
 const app = express();
 const store = new MongoDbStore({
@@ -36,6 +44,9 @@ const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
   });
 
 app.use(cookieParser(COOKIES_SECRET));
+
+// const privateKey = fs.readFileSync("server.key");
+// const certificate = fs.readFileSync("server.cert");
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -61,9 +72,17 @@ const fileFilter = (req, file, cb) => {
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log "),
+  { flags: "a" }
+);
+
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+app.use(helmet());
+app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -131,6 +150,9 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URI)
   .then((result) => {
-    app.listen(3000);
+    // https
+    //   .createServer({ key: privateKey, cert: certificate }, app)
+    //   .listen(process.env.PORT || 3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch((err) => console.log(err));

@@ -4,8 +4,12 @@
   "description": "Complete Guide (nodejs)",
   "main": "index.js",
   "author": "Sezer Emer",
+  "engines": {
+    "node": "22.14.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "MAILERSEND_API_KEY=mlsn.586e714d1de5f20e74036746dddc1ee7aaddffd6670fef53b60d7ae25f01a2b3 MONGO_USER=node-shop MONGO_PASSWORD=node-shop DEFAULT_DB=shop CSRF_SECRET='super csrf secret' COOKIES_SECRET='super cookie secret' CSRF_COOKIE_NAME=_csrf node app.js",
     "dev": "nodemon app.js"
   },
   "license": "ISC",
@@ -15,6 +19,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
+    "compression": "^1.8.0",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^5.0.0",
     "cookie-parser": "^1.4.7",
@@ -25,9 +30,11 @@
     "express-handlebars": "3.0",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
     "mailersend": "^2.3.0",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.5",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.12.0",
     "nodemailer": "^6.10.0",
