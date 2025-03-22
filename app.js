@@ -25,7 +25,6 @@ const COOKIES_SECRET = process.env.COOKIES_SECRET;
 const CSRF_COOKIE_NAME = process.env.CSRF_COOKIE_NAME;
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@node-rest-shop.dnhdu.mongodb.net/${process.env.DEFAULT_DB}?retryWrites=true&w=majority&appName=node-rest-shop`;
-console.log(MONGODB_URI);
 
 const app = express();
 const store = new MongoDbStore({
